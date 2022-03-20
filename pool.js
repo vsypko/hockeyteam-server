@@ -3,7 +3,7 @@ import dotenv from 'dotenv'
 
 dotenv.config()
 const connectionString = process.env.DATABASE_URL
-const pool = new pg.Pool({connectionString, ssl: { rejectUnauthorized: false }})
+const pool = new pg.Pool({connectionString})
 
 // const pool = new pg.Pool({
 //   user: process.env.DB_USER,
