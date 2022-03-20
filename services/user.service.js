@@ -1,7 +1,5 @@
 import bcrypt from 'bcrypt'
-import jwt from 'jsonwebtoken'
 import { v4 as uuidv4 } from 'uuid'
-import nodemailer from 'nodemailer'
 import pool from '../pool.js'
 import tokenService from './token.service.js'
 import mailService from './mail.service.js'
