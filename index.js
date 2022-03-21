@@ -8,7 +8,7 @@ import ws from 'express-ws'
 
 dotenv.config()
 
-const PORT = process.env.PORT || 8000
+const PORT = process.env.PORT || 8080
 const app = express()
 const WSServer = ws(app)
 const aWss = WSServer.getWss()
