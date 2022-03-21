@@ -17,7 +17,7 @@ app.ws('/echo', (ws, req) => {
   ws.on('message', (msg) => {
     setInterval(() => {
       aWss.clients.forEach((client) => {
-        client.send(new Date().toTimeString())
+        client.send(`time:${new Date().toTimeString()}`)
       })
     },1000)
 
