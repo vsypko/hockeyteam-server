@@ -15,7 +15,12 @@ const aWss = WSServer.getWss()
 
 app.ws('/echo', (ws, req) => {
   ws.on('message', (msg) => {
-    handleSocketOpen()
+    setInterval(() => {
+      aWss.clients.forEach((client) => {
+        client.send(new Date().toTimeString())
+      })
+    },1000)
+
     msg = JSON.parse(msg)
 
     switch (msg.method) {
@@ -98,14 +103,6 @@ const broadcast = (msg) => {
     }
   })
 }
-const handleSocketOpen = () => {
-  setInterval(() => {
-    aWss.clients.forEach((client) => {
-      client.send(new Date().toTimeString())
-    })
-  },1000)
-}
-    
 
 app.use(cookieParser())
 app.use(express.json())
