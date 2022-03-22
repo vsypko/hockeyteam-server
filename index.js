@@ -16,8 +16,12 @@ const aWss = WSServer.getWss()
 app.ws('/echo', (ws, req) => {
   ws.on('message', (msg) => {
     setInterval(() => {
+      let serverTime = new Date().toTimeString()
       aWss.clients.forEach((client) => {
-        client.send(`time:${new Date().toTimeString()}`)
+        client.send(JSON.stringify({
+          method: 'herokuConnection',
+          serverTime,
+        }))
       })
     },1000)
 
