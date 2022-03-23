@@ -1,5 +1,5 @@
 import userService from '../services/user.service.js'
-import pool from '../pool.js'
+// import pool from '../pool.js'
 import { validationResult } from 'express-validator'
 import ApiError from '../exceptions/api.error.js'
 
