@@ -23,7 +23,7 @@ app.ws('/echo', (ws, req) => {
           serverTime,
         }))
       })
-    },1000)
+    },30000)
 
     msg = JSON.parse(msg)
 
