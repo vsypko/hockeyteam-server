@@ -44,13 +44,13 @@ class UserService {
   }
   //--------------------------------------------LOG IN-------------------------------------------
   async login(email, password) {
-    const isUser = await pool.query(`SELECT * FROM users WHERE user_email=$1`, [email])
+    const isUser = await pool.query(`SELECT 1 FROM users WHERE user_email=$1`, [email])
     if (isUser.rowCount === 0) {
       throw ApiError.BadRequest(`User with email: ${email} was not found.`)
     }
     const isPassEquals = await bcrypt.compare(password, isUser.rows[0].user_password)
     if (!isPassEquals) {
-      throw ApiError.BadRequest(`Incorrect password.`)
+      throw ApiError.BadRequest(`Incorrect password. Try to authenticate with a google account.`)
     }
 
     const tokens = tokenService.generateTokens({
@@ -60,6 +60,27 @@ class UserService {
     })
     await tokenService.saveToken(isUser.rows[0].user_id, tokens.refreshToken)
     return { ...tokens, user: isUser.rows[0] }
+  }
+  //--------------------------------------------LOG IN WITH GOOGLE--------------------------------
+  async googleauth(email) {
+    const candidate = await pool.query(`SELECT * FROM users WHERE user_email=$1`, [email])
+    let user={}
+    if (candidate.rowCount === 0) {
+      const newUser = await pool.query(`INSERT INTO users (user_email, user_activated) values ($1, $2) RETURNING *`,
+      [email, true])
+      user = newUser.rows[0]
+    } else {
+      user = candidate.rows[0] 
+    }
+    
+    const tokens = tokenService.generateTokens({
+      userId: user.user_id,
+      email: user.user_email,
+      role: user.user_role_id,
+    })
+    await tokenService.saveToken(user.user_id, tokens.refreshToken)
+    return { ...tokens, user }
+
   }
   //--------------------------------------------LOG OUT-------------------------------------------
   async logout(refreshToken) {

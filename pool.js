@@ -1,7 +1,7 @@
 import pg from 'pg'
-// import dotenv from 'dotenv'
+import dotenv from 'dotenv'
 
-// dotenv.config()
+dotenv.config()
 const connectionString = process.env.DATABASE_URL
 const pool = new pg.Pool({connectionString, ssl: { rejectUnauthorized: false }})
 
