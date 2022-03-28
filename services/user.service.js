@@ -44,15 +44,17 @@ class UserService {
   }
   //--------------------------------------------LOG IN-------------------------------------------
   async login(email, password) {
-    const isUser = await pool.query(`SELECT 1 FROM users WHERE user_email=$1`, [email])
+    const isUser = await pool.query(`SELECT * FROM users WHERE user_email=$1`, [email])
     if (isUser.rowCount === 0) {
       throw ApiError.BadRequest(`User with email: ${email} was not found.`)
     }
-    const isPassEquals = await bcrypt.compare(password, isUser.rows[0].user_password)
-    if (!isPassEquals) {
-      throw ApiError.BadRequest(`Incorrect password. Try to authenticate with a google account.`)
+    if (!isUser.rows[0].user_password) {
+      throw ApiError.BadRequest(`For ${email} login with a google account.`)
     }
-
+    const isPassEquals = await bcrypt.compare(password, isUser.rows[0].user_password)
+      if (!isPassEquals) {
+        throw ApiError.BadRequest(`Incorrect password.`)
+      }
     const tokens = tokenService.generateTokens({
       userId: isUser.rows[0].user_id,
       email,

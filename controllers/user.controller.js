@@ -60,7 +60,7 @@ class UserController {
       const { refreshToken } = req.cookies
       const token = await userService.logout(refreshToken)
       res.clearCookie('refreshToken')
-      return res.status(200).json(`You have been logged out and ${token} token was deleted.`)
+      return res.status(200).json(`You have been logged out and token was deleted.`)
     } catch (e) {
       next(e)
     }
