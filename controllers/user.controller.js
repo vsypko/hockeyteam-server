@@ -1,7 +1,7 @@
-import userService from '../services/user.service.js'
-import { validationResult } from 'express-validator'
-import ApiError from '../exceptions/api.error.js'
-import { OAuth2Client } from 'google-auth-library'
+import userService from "../services/user.service.js"
+import { validationResult } from "express-validator"
+import ApiError from "../exceptions/api.error.js"
+import { OAuth2Client } from "google-auth-library"
 
 class UserController {
   //---------------------------------REGISTRATION----------------------------------------
@@ -9,11 +9,16 @@ class UserController {
     const { email, password } = req.body
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
-      return next(ApiError.BadRequest('Validation error. Entered incorrect data.', errors.array()))
+      return next(
+        ApiError.BadRequest(
+          "Validation error. Entered incorrect data.",
+          errors.array()
+        )
+      )
     }
     try {
       const userData = await userService.registration(email, password)
-      res.cookie('refreshToken', userData.refreshToken, {
+      res.cookie("refreshToken", userData.refreshToken, {
         maxAge: 30 * 24 * 60 * 60 * 1000,
         httpOnly: true,
       })
@@ -27,7 +32,7 @@ class UserController {
     try {
       const { email, password } = req.body
       const userData = await userService.login(email, password)
-      res.cookie('refreshToken', userData.refreshToken, {
+      res.cookie("refreshToken", userData.refreshToken, {
         maxAge: 30 * 24 * 60 * 60 * 1000,
         httpOnly: true,
       })
@@ -37,15 +42,18 @@ class UserController {
     }
   }
   //-----------------------------GOOGLE AUTH ----------------------------------------
-  async googleauth(req,res,next) {
+  async googleauth(req, res, next) {
     try {
-      const {tokenId} = req.body
+      const { tokenId } = req.body
       const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID)
-      const ticket = await client.verifyIdToken({idToken:tokenId, audience: process.env.GOOGLE_CLIENT_ID})
+      const ticket = await client.verifyIdToken({
+        idToken: tokenId,
+        audience: process.env.GOOGLE_CLIENT_ID,
+      })
       const payload = ticket.getPayload()
       const userData = await userService.googleauth(payload.email)
 
-      res.cookie('refreshToken', userData.refreshToken, {
+      res.cookie("refreshToken", userData.refreshToken, {
         maxAge: 30 * 24 * 60 * 60 * 1000,
         httpOnly: true,
       })
@@ -59,8 +67,10 @@ class UserController {
     try {
       const { refreshToken } = req.cookies
       const token = await userService.logout(refreshToken)
-      res.clearCookie('refreshToken')
-      return res.status(200).json(`You have been logged out and token was deleted.`)
+      res.clearCookie("refreshToken")
+      return res
+        .status(200)
+        .json(`You have been logged out and token was deleted.`)
     } catch (e) {
       next(e)
     }
@@ -81,7 +91,7 @@ class UserController {
       const { refreshToken } = req.cookies
       const data = await userService.refresh(refreshToken)
 
-      res.cookie('refreshToken', data.refreshToken, {
+      res.cookie("refreshToken", data.refreshToken, {
         maxAge: 30 * 24 * 60 * 60 * 1000,
         httpOnly: true,
       })

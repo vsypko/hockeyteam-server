@@ -1,9 +1,9 @@
-import ApiError from '../exceptions/api.error.js'
-import tokenService from '../services/token.service.js'
+import ApiError from "../exceptions/api.error.js"
+import tokenService from "../services/token.service.js"
 
 export default (role) => {
   return (req, res, next) => {
-    if (req.method === 'OPTIONS') {
+    if (req.method === "OPTIONS") {
       next(ApiError.BadRequest())
     }
     try {
@@ -11,7 +11,7 @@ export default (role) => {
       if (!authorizationHeader) {
         return next(ApiError.UnauthorizedError())
       }
-      const accessToken = authorizationHeader.split(' ')[1]
+      const accessToken = authorizationHeader.split(" ")[1]
       if (!accessToken) {
         return next(ApiError.UnauthorizedError())
       }
@@ -22,7 +22,7 @@ export default (role) => {
       if (!userData) {
         return next(ApiError.UnauthorizedError())
       }
-      if (userData.role > role) {
+      if (userData.role < role) {
         return next(ApiError.UnauthorizedError())
       }
       req.user = userData
