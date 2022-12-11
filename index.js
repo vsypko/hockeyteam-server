@@ -4,7 +4,6 @@ import cors from "cors"
 import cookieParser from "cookie-parser"
 import errorMiddleware from "./middlewares/error.middleware.js"
 import ws from "express-ws"
-import path from "path"
 
 import userRouter from "./routes/user.routes.js"
 import userSocket from "./services/socket.service.js"
@@ -24,7 +23,6 @@ app.use(
     // origin: [process.env.CLIENT_URL_PRIMARY, process.env.CLIENT_URL_SECONDARY],
   }),
 )
-app.use(express.static(path.join(__dirname)))
 app.use(cookieParser())
 app.use(express.json())
 app.use("/api", userRouter)
