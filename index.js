@@ -1,5 +1,4 @@
 import express from "express"
-import dotenv from "dotenv"
 import cors from "cors"
 import cookieParser from "cookie-parser"
 import errorMiddleware from "./middlewares/error.middleware.js"
@@ -7,8 +6,6 @@ import ws from "express-ws"
 
 import userRouter from "./routes/user.routes.js"
 import userSocket from "./services/socket.service.js"
-
-dotenv.config()
 
 const PORT = process.env.PORT || 8080
 const app = express()
