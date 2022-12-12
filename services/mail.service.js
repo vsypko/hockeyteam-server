@@ -21,7 +21,7 @@ class MailService {
       html: `
         <div>
           <h3>For your HOCKEY TEAM account activation please follow this link:</h3>
-          <a href="${link}">${link}</a>
+          <a href="${process.env.API_URL}${link}">${link}</a>
         </div>
       `,
     })

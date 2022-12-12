@@ -1,9 +1,9 @@
-import bcrypt from 'bcrypt'
-import { v4 as uuidv4 } from 'uuid'
-import pool from '../pool.js'
-import tokenService from './token.service.js'
-import mailService from './mail.service.js'
-import ApiError from '../exceptions/api.error.js'
+import bcrypt from "bcrypt"
+import { v4 as uuidv4 } from "uuid"
+import pool from "../pool.js"
+import tokenService from "./token.service.js"
+import mailService from "./mail.service.js"
+import ApiError from "../exceptions/api.error.js"
 
 class UserService {
   //--------------------------------------------REGISTRATION---------------------------------------
@@ -17,11 +17,11 @@ class UserService {
     const activationLink = uuidv4()
     const newUser = await pool.query(
       `INSERT INTO users (user_email, user_password, user_activationlink) values ($1, $2, $3) RETURNING *`,
-      [email, hashPassword, activationLink]
+      [email, hashPassword, activationLink],
     )
     const user = newUser.rows[0]
 
-    await mailService.sendActivationMail(email, `${process.env.API_URL}/api/activate/${activationLink}`)
+    await mailService.sendActivationMail(email, `${activationLink}`)
     const tokens = tokenService.generateTokens({
       userId: user.user_id,
       email,
@@ -34,12 +34,12 @@ class UserService {
   async activate(activationLink) {
     const isActivated = await pool.query(`SELECT 1 FROM users WHERE user_activationlink=$1`, [activationLink])
     if (isActivated.rowCount === 0) {
-      throw ApiError.BadRequest('Incorrect activation link.')
+      throw ApiError.BadRequest("Incorrect activation link.")
     }
 
     const activateUser = await pool.query(
       `UPDATE users SET user_activated = $1 WHERE user_activationlink=$2 RETURNING *`,
-      [true, activationLink]
+      [true, activationLink],
     )
   }
   //--------------------------------------------LOG IN-------------------------------------------
@@ -52,9 +52,9 @@ class UserService {
       throw ApiError.BadRequest(`For ${email} login with a google account.`)
     }
     const isPassEquals = await bcrypt.compare(password, isUser.rows[0].user_password)
-      if (!isPassEquals) {
-        throw ApiError.BadRequest(`Incorrect password.`)
-      }
+    if (!isPassEquals) {
+      throw ApiError.BadRequest(`Incorrect password.`)
+    }
     const tokens = tokenService.generateTokens({
       userId: isUser.rows[0].user_id,
       email,
@@ -66,15 +66,17 @@ class UserService {
   //--------------------------------------------LOG IN WITH GOOGLE--------------------------------
   async googleauth(email) {
     const candidate = await pool.query(`SELECT * FROM users WHERE user_email=$1`, [email])
-    let user={}
+    let user = {}
     if (candidate.rowCount === 0) {
-      const newUser = await pool.query(`INSERT INTO users (user_email, user_activated) values ($1, $2) RETURNING *`,
-      [email, true])
+      const newUser = await pool.query(`INSERT INTO users (user_email, user_activated) values ($1, $2) RETURNING *`, [
+        email,
+        true,
+      ])
       user = newUser.rows[0]
     } else {
-      user = candidate.rows[0] 
+      user = candidate.rows[0]
     }
-    
+
     const tokens = tokenService.generateTokens({
       userId: user.user_id,
       email: user.user_email,
@@ -82,7 +84,6 @@ class UserService {
     })
     await tokenService.saveToken(user.user_id, tokens.refreshToken)
     return { ...tokens, user }
-
   }
   //--------------------------------------------LOG OUT-------------------------------------------
   async logout(refreshToken) {
