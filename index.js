@@ -15,8 +15,8 @@ app.ws("/echo", (ws, req) => userSocket(ws, aWss))
 
 app.use(
   cors({
-    // credentials: true,
-    // origin: [process.env.CLIENT_URL],
+    credentials: true,
+    origin: [process.env.CLIENT_URL],
     // origin: [process.env.CLIENT_URL_PRIMARY, process.env.CLIENT_URL_SECONDARY],
   }),
 )
