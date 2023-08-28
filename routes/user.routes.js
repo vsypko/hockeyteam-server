@@ -1,5 +1,5 @@
 import express from "express"
-import UserController from "../controllers/user.controller.js"
+import userController from "../controllers/user.controller.js"
 import { body } from "express-validator"
 import authMiddleware from "../middlewares/auth.middleware.js"
 
@@ -9,15 +9,15 @@ router.post(
   "/registration",
   body("email").isEmail(),
   body("password").isLength({ min: 4, max: 12 }),
-  UserController.registration
+  userController.registration,
 )
-router.post("/login", UserController.login)
-router.post("/googleauth", UserController.googleauth)
-router.post("/logout", UserController.logout)
-router.get("/activate/:link", UserController.activate)
-router.get("/refresh", UserController.refresh)
-router.get("/users", authMiddleware(3), UserController.getUsers)
-router.get("/user", authMiddleware(4), UserController.getUser)
+router.post("/login", userController.login)
+router.post("/googleauth", userController.googleauth)
+router.post("/logout", userController.logout)
+router.get("/activate/:link", userController.activate)
+router.get("/refresh", userController.refresh)
+router.get("/users", authMiddleware(3), userController.getUsers)
+router.get("/user", authMiddleware(4), userController.getUser)
 // router.get('/echo',)
 // router.get('/user/:id', userController.getOneUser)
 // router.put('/user', userController.updateUser)

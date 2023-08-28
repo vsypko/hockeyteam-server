@@ -9,19 +9,14 @@ class UserController {
     const { email, password } = req.body
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
-      return next(
-        ApiError.BadRequest(
-          "Validation error. Entered incorrect data.",
-          errors.array(),
-        ),
-      )
+      return next(ApiError.BadRequest("Validation error. Entered incorrect data.", errors.array()))
     }
     try {
       const userData = await userService.registration(email, password)
       res.cookie("refreshToken", userData.refreshToken, {
         maxAge: 30 * 24 * 60 * 60 * 1000,
         httpOnly: true,
-        sameSite: "none",
+        sameSite: "lax",
         secure: true,
       })
       return res.json(userData)
@@ -37,7 +32,7 @@ class UserController {
       res.cookie("refreshToken", userData.refreshToken, {
         maxAge: 30 * 24 * 60 * 60 * 1000,
         httpOnly: true,
-        sameSite: "none",
+        sameSite: "lax",
         secure: true,
       })
       return res.json(userData)
@@ -60,7 +55,7 @@ class UserController {
       res.cookie("refreshToken", userData.refreshToken, {
         maxAge: 30 * 24 * 60 * 60 * 1000,
         httpOnly: true,
-        sameSite: "none",
+        sameSite: "lax",
         secure: true,
       })
       return res.json(userData)
@@ -74,9 +69,7 @@ class UserController {
       const { refreshToken } = req.cookies
       const token = await userService.logout(refreshToken)
       res.clearCookie("refreshToken")
-      return res
-        .status(200)
-        .json(`You have been logged out and token was deleted.`)
+      return res.status(200).json(`You have been logged out and token was deleted.`)
     } catch (e) {
       next(e)
     }
@@ -100,7 +93,7 @@ class UserController {
       res.cookie("refreshToken", data.refreshToken, {
         maxAge: 30 * 24 * 60 * 60 * 1000,
         httpOnly: true,
-        sameSite: "none",
+        sameSite: "lax",
         secure: true,
       })
       return res.status(200).json({
